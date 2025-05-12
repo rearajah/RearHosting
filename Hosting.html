@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harga & Pemesanan - Rear OfficiaL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-purple-700 text-white p-6">
+    <div class="container mx-auto">
+      <h1 class="text-2xl font-bold">Rear OfficiaL</h1>
+      <p class="text-sm">Website Pemesanan Hosting Rear OfficiaL</p>
+    </div>
+  </header>
+
+  <!-- Kalkulator Harga -->
+  <section class="py-10">
+    <div class="container mx-auto max-w-xl px-4">
+      <h2 class="text-xl font-semibold text-purple-800 mb-4">Produk Rear OfficiaL</h2>
+
+      <label for="jenisLayanan" class="block mb-1">Pilih layanan:</label>
+      <select id="jenisLayanan" class="w-full p-2 border rounded mb-4" onchange="ubahForm()">
+        <option value="pt">PT Panel - Rp25.000 (selamanya)</option>
+        <option value="admin">Admin Panel - Rp15.000 (selamanya)</option>
+        <option value="reseller">Reseller Panel - Rp7.000 (selamanya)</option>
+        <option value="wa">Bot WhatsApp - Rp1.000/hari</option>
+        <option value="ptero">Panel Pterodactyl - Rp1.000/GB</option>
+      </select>
+
+      <div id="durasiInput" class="mb-4 hidden">
+        <label for="durasi" class="block mb-1">Jumlah Hari:</label>
+        <input type="number" id="durasi" class="w-full p-2 border rounded" placeholder="Contoh: 7" />
+      </div>
+
+      <div id="gbInput" class="mb-4 hidden">
+        <label for="jumlahGB" class="block mb-1">Jumlah GB RAM:</label>
+        <input type="number" id="jumlahGB" class="w-full p-2 border rounded" placeholder="Contoh: 2" />
+      </div>
+
+      <button onclick="hitungHarga()" class="w-full bg-purple-700 text-white py-2 rounded hover:bg-purple-800">Hitung Total</button>
+
+      <p id="hasilHarga" class="mt-4 font-semibold text-purple-700"></p>
+    </div>
+  </section>
+
+  <!-- Form Pemesanan -->
+  <section class="py-10 bg-white border-t">
+    <div class="container mx-auto max-w-xl px-4">
+      <h2 class="text-xl font-semibold text-purple-800 mb-4">Form Pemesanan</h2>
+
+      <input id="nama" type="text" placeholder="Nama Lengkap" class="w-full p-2 border rounded mb-3" />
+      <input id="email" type="email" placeholder="Email Aktif" class="w-full p-2 border rounded mb-3" />
+      <input id="wa" type="text" placeholder="Nomor WhatsApp Anda" class="w-full p-2 border rounded mb-3" />
+      <textarea id="catatan" placeholder="Catatan tambahan (opsional)" class="w-full p-2 border rounded mb-4"></textarea>
+
+      <button onclick="kirimPesan()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Kirim via WhatsApp</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-purple-100 text-center py-4 text-purple-700">
+    <p>&copy; 2025 Rear OfficiaL. Solusi Hosting Terbaik Masa Kini.</p>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    let totalHarga = 0;
+
+    function ubahForm() {
+      const jenis = document.getElementById('jenisLayanan').value;
+      document.getElementById('durasiInput').classList.add('hidden');
+      document.getElementById('gbInput').classList.add('hidden');
+
+      if (jenis === 'wa') {
+        document.getElementById('durasiInput').classList.remove('hidden');
+      } else if (jenis === 'ptero') {
+        document.getElementById('gbInput').classList.remove('hidden');
+      }
+    }
+
+    function hitungHarga() {
+      const jenis = document.getElementById('jenisLayanan').value;
+      const hari = parseInt(document.getElementById('durasi').value);
+      const gb = parseInt(document.getElementById('jumlahGB').value);
+
+      switch (jenis) {
+        case 'pt': totalHarga = 25000; break;
+        case 'admin': totalHarga = 15000; break;
+        case 'reseller': totalHarga = 7000; break;
+        case 'wa':
+          if (isNaN(hari) || hari <= 0) {
+            alert("Masukkan jumlah hari yang valid.");
+            return;
+          }
+          totalHarga = hari * 1000;
+          break;
+        case 'ptero':
+          if (isNaN(gb) || gb <= 0) {
+            alert("Masukkan jumlah GB yang valid.");
+            return;
+          }
+          totalHarga = gb * 1000;
+          break;
+      }
+
+      document.getElementById('hasilHarga').innerText = `Total: Rp${totalHarga.toLocaleString()}`;
+    }
+
+    function kirimPesan() {
+      const nama = document.getElementById('nama').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const waUser = document.getElementById('wa').value.trim();
+      const catatan = document.getElementById('catatan').value.trim();
+      const layanan = document.getElementById('jenisLayanan').selectedOptions[0].text;
+
+      if (!nama || !email || !waUser || totalHarga === 0) {
+        alert("Lengkapi semua data dan hitung harga terlebih dahulu.");
+        return;
+      }
+
+      const pesan = `Halo Rear OfficiaL, saya ingin memesan layanan:%0A
+- Nama: ${nama}%0A
+- Email: ${email}%0A
+- WhatsApp: ${waUser}%0A
+- Layanan: ${layanan}%0A
+- Total Harga: Rp${totalHarga.toLocaleString()}%0A
+- Catatan: ${catatan || '-'}%0A
+%0AMohon konfirmasinya, terima kasih!`;
+
+      const nomorTujuan = "6283839976528";
+      const link = `https://wa.me/${nomorTujuan}?text=${pesan}`;
+      window.open(link, '_blank');
+    }
+
+    window.onload = ubahForm;
+  </script>
+
+</body>
+</html>
